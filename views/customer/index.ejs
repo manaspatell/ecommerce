@@ -1,0 +1,605 @@
+<%- include('partials/header', { title: 'Home' }) %>
+
+<!-- Hero Slider -->
+<% if (banners && banners.length > 0) { %>
+<div class="container my-4">
+
+    <div id="heroCarousel" class="carousel slide carousel-fade" data-bs-ride="carousel">
+
+        <!-- Indicators -->
+        <div class="carousel-indicators">
+            <% banners.forEach((banner, index) => { %>
+                <button type="button"
+                    data-bs-target="#heroCarousel"
+                    data-bs-slide-to="<%= index %>"
+                    class="<%= index === 0 ? 'active' : '' %>"
+                    aria-current="<%= index === 0 ? 'true' : 'false' %>"
+                    aria-label="Slide <%= index + 1 %>"></button>
+            <% }); %>
+        </div>
+
+        <!-- Slides -->
+        <div class="carousel-inner">
+            <% banners.forEach((banner, index) => { %>
+                <div class="carousel-item <%= index === 0 ? 'active' : '' %>">
+                    <img src="<%= banner.image %>" class="d-block w-100 hero-slider-img" alt="<%= banner.title %>">
+
+                    <!-- Transparent caption box -->
+                    <div class="carousel-caption hero-caption">
+                        <h2 class="banner-title"><%= banner.title %></h2>
+                        <% if (banner.subtitle) { %>
+                            <p class="banner-subtitle"><%= banner.subtitle %></p>
+                        <% } %>
+                        <% if (banner.link) { %>
+                            <a href="<%= banner.link %>" class="btn btn-primary btn-lg">Shop Now</a>
+                        <% } %>
+                    </div>
+                </div>
+            <% }); %>
+        </div>
+
+        <!-- Controls -->
+        <button class="carousel-control-prev" type="button" data-bs-target="#heroCarousel" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon"></span>
+        </button>
+
+        <button class="carousel-control-next" type="button" data-bs-target="#heroCarousel" data-bs-slide="next">
+            <span class="carousel-control-next-icon"></span>
+        </button>
+
+    </div>
+</div>
+<% } %>
+
+
+<!-- Trust Badges Section -->
+<div class="container my-4">
+    <div class="row g-3 justify-content-center">
+        <div class="col-md-3 col-sm-6">
+            <div class="trust-badge animate-fade-in" style="animation-delay: 0.1s;">
+                <i class="bi bi-shield-lock-fill trust-icon-secure"></i>
+
+                <span>Secure Payment</span>
+            </div>
+        </div>
+        <div class="col-md-3 col-sm-6">
+            <div class="trust-badge animate-fade-in" style="animation-delay: 0.2s;">
+                <i class="bi bi-truck"></i>
+                <span>Free Shipping</span>
+            </div>
+        </div>
+        <div class="col-md-3 col-sm-6">
+            <div class="trust-badge animate-fade-in" style="animation-delay: 0.3s;">
+                <i class="bi bi-arrow-counterclockwise"></i>
+                <span>Easy Returns</span>
+            </div>
+        </div>
+        <div class="col-md-3 col-sm-6">
+            <div class="trust-badge animate-fade-in" style="animation-delay: 0.4s;">
+                <i class="bi bi-headset"></i>
+                <span>24/7 Support</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container my-5">
+    <!-- Categories -->
+    <section class="mb-5 category-section">
+        <h2 class="text-center mb-4"><i class="bi bi-grid-3x3-gap-fill me-2" style="color: #4A90E2;"></i>Shop by Category</h2>
+        <div class="row g-4">
+            <% if (categories && categories.length > 0) { %>
+                <% categories.forEach(category => { %>
+                    <div class="col-md-3 col-sm-6">
+                        <div class="card category-card h-100 shadow-sm">
+                            <a href="/category/<%= category.slug %>" class="text-decoration-none">
+                                <div class="image-container">
+                                    <img src="<%= category.image || 'data:image/svg+xml,%3Csvg xmlns=\"http://www.w3.org/2000/svg\" width=\"200\" height=\"200\"%3E%3Crect width=\"200\" height=\"200\" fill=\"%23ddd\"/%3E%3Ctext x=\"50%25\" y=\"50%25\" text-anchor=\"middle\" dy=\".3em\" fill=\"%23999\"%3ENo Image%3C/text%3E%3C/svg%3E' %>" 
+                                         class="card-img-top" 
+                                         alt="<%= category.name %>"
+                                         loading="lazy"
+                                         onload="if(this && this.classList) this.classList.add('loaded')"
+                                         onerror="if(this) { this.onerror=null; this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'200\' height=\'200\'%3E%3Crect width=\'200\' height=\'200\' fill=\'%23ddd\'/%3E%3Ctext x=\'50%25\' y=\'50%25\' text-anchor=\'middle\' dy=\'.3em\' fill=\'%23999\'%3ENo Image%3C/text%3E%3C/svg%3E'; this.style.backgroundColor='#f0f0f0'; if(this.classList) this.classList.add('loaded'); }">
+                                </div>
+                                <div class="card-body text-center">
+                                    <h5 class="card-title text-dark">
+                                        <i class="bi bi-tag-fill me-2" style="color: #F7A400;"></i><%= category.name %>
+                                    </h5>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                <% }); %>
+            <% } else { %>
+                <div class="col-12 text-center">
+                    <p class="text-muted">No categories available.</p>
+                </div>
+            <% } %>
+        </div>
+    </section>
+
+    <!-- Featured Products -->
+    <section class="mb-5 product-section">
+        <h2 class="text-center mb-4"><i class="bi bi-star-fill me-2" style="color: #FFD700;"></i>Featured Products</h2>
+        <div class="row g-4">
+            <% if (featuredProducts && featuredProducts.length > 0) { %>
+                <% featuredProducts.forEach(product => { %>
+                    <div class="col-md-3 col-sm-6">
+                        <div class="card product-card h-100 shadow-sm position-relative">
+                            <% if (product.discount && product.discount.enabled && product.discount.percentage > 0) { %>
+                                <div class="discount-badge"><%= product.discount.percentage %>% OFF</div>
+                            <% } %>
+                            <a href="/product/<%= product.slug %>">
+                                <div class="image-container">
+                                    <% 
+                                    let productImage = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="200" height="200"%3E%3Crect width="200" height="200" fill="%23ddd"/%3E%3Ctext x="50%25" y="50%25" text-anchor="middle" dy=".3em" fill="%23999"%3ENo Image%3C/text%3E%3C/svg%3E';
+                                    if (product.images && product.images.length > 0 && product.images[0]) {
+                                        productImage = product.images[0];
+                                    }
+                                    %>
+                                    <img src="<%= productImage %>" 
+                                         class="card-img-top" 
+                                         alt="<%= product.name %>"
+                                         loading="lazy"
+                                         onload="if(this && this.classList) this.classList.add('loaded')"
+                                         onerror="if(this) { this.onerror=null; this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'200\' height=\'200\'%3E%3Crect width=\'200\' height=\'200\' fill=\'%23ddd\'/%3E%3Ctext x=\'50%25\' y=\'50%25\' text-anchor=\'middle\' dy=\'.3em\' fill=\'%23999\'%3ENo Image%3C/text%3E%3C/svg%3E'; this.style.backgroundColor='#f0f0f0'; if(this.classList) this.classList.add('loaded'); }">
+                                </div>
+                            </a>
+                            <div class="card-body">
+                                <h6 class="card-title">
+                                    <a href="/product/<%= product.slug %>" class="text-decoration-none text-dark">
+                                        <%= product.name %>
+                                    </a>
+                                </h6>
+                                <div class="mb-2">
+                                    <% 
+                                    let finalPrice = product.price;
+                                    if (product.discount && product.discount.enabled && product.discount.percentage > 0) {
+                                        finalPrice = product.price * (1 - product.discount.percentage / 100);
+                                    %>
+                                        <span class="price-original">₹<%= product.price.toLocaleString() %></span>
+                                        <span class="price-discounted">₹<%= Math.round(finalPrice).toLocaleString() %></span>
+                                    <% } else { %>
+                                        <span class="price-discounted">₹<%= product.price.toLocaleString() %></span>
+                                    <% } %>
+                                </div>
+                                <button class="btn btn-inquiry btn-sm w-100" data-product-id="<%= product._id %>" data-product-name="<%= product.name %>" data-action="inquiry">
+                                    <i class="bi bi-envelope-fill me-1"></i> Send Inquiry
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                <% }); %>
+            <% } else { %>
+                <div class="col-12 text-center">
+                    <p class="text-muted">No products available.</p>
+                </div>
+            <% } %>
+        </div>
+    </section>
+
+    <!-- Latest Articles -->
+    <% if (latestArticles && latestArticles.length > 0) { %>
+        <section class="mb-5">
+            <h2 class="text-center mb-4"><i class="bi bi-journal-text me-2" style="color: #E74C3C;"></i>Latest Articles</h2>
+            <div class="row g-4">
+                <% latestArticles.forEach(article => { %>
+                    <div class="col-md-4">
+                        <div class="card h-100 shadow-sm article-card">
+                            <div class="article-image-container <%= !article.image ? 'no-image' : '' %>">
+                                <% if (article.image) { %>
+                                    <img src="<%= article.image %>" 
+                                         class="card-img-top article-image" 
+                                         alt="<%= article.title %>" 
+                                         loading="lazy"
+                                         onload="if(this && this.classList) this.classList.add('loaded')"
+                                         onerror="if(this) { this.style.display='none'; this.parentElement.classList.add('no-image'); }">
+                                <% } else { %>
+                                    <div class="article-placeholder">
+                                        <i class="bi bi-journal-text"></i>
+                                    </div>
+                                <% } %>
+                            </div>
+                            <div class="card-body">
+                                <h5 class="card-title">
+                                    <a href="/article/<%= article.slug %>" class="text-decoration-none text-dark">
+                                        <%= article.title %>
+                                    </a>
+                                </h5>
+                                <p class="card-text text-muted"><%= article.excerpt || article.content.substring(0, 100) + '...' %></p>
+                                <a href="/article/<%= article.slug %>" class="btn btn-sm btn-outline-primary"><i class="bi bi-arrow-right-circle-fill me-1"></i>Read More</a>
+                            </div>
+                        </div>
+                    </div>
+                <% }); %>
+            </div>
+        </section>
+    <% } %>
+
+    <!-- Why Choose Us Section -->
+    <section class="mb-5 why-choose-section">
+        <div class="container">
+            <h2 class="text-center mb-5"><i class="bi bi-award-fill me-2" style="color: #F7A400;"></i>Why Choose Tushar Electronics</h2>
+            <div class="row g-4">
+                <div class="col-md-3 col-sm-6">
+                    <div class="feature-box text-center">
+                        <div class="feature-icon">
+                            <i class="bi bi-shield-check-fill"></i>
+                        </div>
+                        <h5>Authentic Products</h5>
+                        <p class="text-muted">100% genuine products with warranty</p>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-6">
+                    <div class="feature-box text-center">
+                        <div class="feature-icon">
+                            <i class="bi bi-truck"></i>
+                        </div>
+                        <h5>Fast Delivery</h5>
+                        <p class="text-muted">Quick and reliable shipping service</p>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-6">
+                    <div class="feature-box text-center">
+                        <div class="feature-icon">
+                            <i class="bi bi-headset"></i>
+                        </div>
+                        <h5>Expert Support</h5>
+                        <p class="text-muted">24/7 customer support available</p>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-6">
+                    <div class="feature-box text-center">
+                        <div class="feature-icon">
+                            <i class="bi bi-currency-dollar"></i>
+                        </div>
+                        <h5>Best Prices</h5>
+                        <p class="text-muted">Competitive pricing with great deals</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials -->
+    <% if (testimonials && testimonials.length > 0) { %>
+        <section class="mb-5 testimonials-section">
+            <div class="container">
+                <h2 class="text-center mb-4"><i class="bi bi-chat-quote-fill me-2" style="color: #9B59B6;"></i>What Our Customers Say</h2>
+                <div class="row g-4">
+                    <% testimonials.forEach(testimonial => { %>
+                        <div class="col-md-4">
+                            <div class="card h-100 testimonial-card">
+                                <div class="card-body">
+                                    <div class="mb-2">
+                                        <% for (let i = 0; i < testimonial.rating; i++) { %>
+                                            <i class="bi bi-star-fill text-warning"></i>
+                                        <% } %>
+                                    </div>
+                                    <p class="card-text">"<%= testimonial.feedback %>"</p>
+                                    <p class="card-text"><small class="text-muted">- <%= testimonial.name %></small></p>
+                                </div>
+                            </div>
+                        </div>
+                    <% }); %>
+                </div>
+            </div>
+        </section>
+    <% } %>
+
+    <!-- Newsletter Section -->
+    <section class="mb-5 newsletter-section">
+        <div class="container">
+            <div class="newsletter-box">
+                <div class="row align-items-center">
+                    <div class="col-md-6">
+                        <h3><i class="bi bi-envelope-paper-fill me-2"></i>Subscribe to Our Newsletter</h3>
+                        <p class="text-muted mb-0">Get the latest deals and updates delivered to your inbox</p>
+                    </div>
+                    <div class="col-md-6">
+                        <form class="d-flex gap-2">
+                            <input type="email" class="form-control" placeholder="Enter your email" required>
+                            <button type="submit" class="btn btn-primary">Subscribe</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+<!-- Inquiry Modal -->
+<div class="modal fade" id="inquiryModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Send Inquiry</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body inquiry-form">
+                <form id="inquiryForm">
+                    <input type="hidden" id="inquiryProductId" name="product_ids">
+                    <input type="hidden" id="inquiryProductName" name="product_name">
+                    <div class="mb-3">
+                        <label class="form-label">Full Name *</label>
+                        <input type="text" class="form-control" name="name" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Phone Number *</label>
+                        <input type="tel" class="form-control" name="phone" required placeholder="Enter your number here">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Gmail Email *</label>
+                        <input type="email" class="form-control" name="email" required placeholder="yourname@gmail.com">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Product Name</label>
+                        <input type="text" class="form-control" id="displayProductName" readonly>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Product ID</label>
+                        <input type="text" class="form-control" id="displayProductId" readonly>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Message (Optional)</label>
+                        <textarea class="form-control" name="message" rows="4" placeholder="Any additional information..."></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-inquiry w-100 mb-2">Send Inquiry</button>
+                    <a href="tel:+919171310766" class="btn btn-outline-primary w-100">
+                        <i class="bi bi-telephone-fill"></i> Call Directly: +91 9171310766
+                    </a>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Initialize Banner Carousel - Fully Functional
+(function() {
+    let carouselInstance = null;
+    
+    function initCarousel() {
+        const carouselElement = document.querySelector('#heroCarousel');
+        if (!carouselElement) {
+            return;
+        }
+        
+        // Check if Bootstrap is loaded
+        if (typeof bootstrap === 'undefined' || !bootstrap.Carousel) {
+            setTimeout(initCarousel, 100);
+            return;
+        }
+        
+        try {
+            const items = carouselElement.querySelectorAll('.carousel-item');
+            if (items.length === 0) {
+                console.warn('No carousel items found');
+                return;
+            }
+            
+            // Dispose existing instance if any
+            const existing = bootstrap.Carousel.getInstance(carouselElement);
+            if (existing) {
+                existing.dispose();
+            }
+            
+            // Create new carousel instance with proper settings
+            carouselInstance = new bootstrap.Carousel(carouselElement, {
+                interval: 2000,
+                ride: false,
+                wrap: true,
+                pause: 'hover',
+                keyboard: true,
+                touch: true
+            });
+            
+            // Start auto-sliding
+            carouselInstance.cycle();
+            
+            // Ensure controls are clickable - Remove old listeners and add new ones
+            let prevBtn = carouselElement.querySelector('.carousel-control-prev');
+            let nextBtn = carouselElement.querySelector('.carousel-control-next');
+            
+            // Remove existing listeners by cloning
+            if (prevBtn) {
+                const newPrevBtn = prevBtn.cloneNode(true);
+                prevBtn.parentNode.replaceChild(newPrevBtn, prevBtn);
+                prevBtn = newPrevBtn; // Update reference
+                newPrevBtn.setAttribute('data-bs-slide', 'prev');
+                newPrevBtn.setAttribute('data-bs-target', '#heroCarousel');
+                newPrevBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    e.stopImmediatePropagation();
+                    if (carouselInstance) {
+                        carouselInstance.prev();
+                    }
+                }, true);
+            }
+            
+            if (nextBtn) {
+                const newNextBtn = nextBtn.cloneNode(true);
+                nextBtn.parentNode.replaceChild(newNextBtn, nextBtn);
+                nextBtn = newNextBtn; // Update reference
+                newNextBtn.setAttribute('data-bs-slide', 'next');
+                newNextBtn.setAttribute('data-bs-target', '#heroCarousel');
+                newNextBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    e.stopImmediatePropagation();
+                    if (carouselInstance) {
+                        carouselInstance.next();
+                    }
+                }, true);
+            }
+            
+            console.log('✅ Carousel initialized with', items.length, 'banners');
+            console.log('✅ Navigation arrows enabled');
+            
+        } catch (error) {
+            console.error('Error initializing carousel:', error);
+        }
+    }
+    
+    // Initialize when ready
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(initCarousel, 300);
+        });
+    } else {
+        setTimeout(initCarousel, 300);
+    }
+    
+    // Backup initialization after page load
+    window.addEventListener('load', function() {
+        setTimeout(initCarousel, 400);
+    });
+})();
+
+// Image loading handler and animations
+document.addEventListener('DOMContentLoaded', function() {
+    // Handle lazy loaded images
+    const lazyImages = document.querySelectorAll('img[loading="lazy"]');
+    lazyImages.forEach(img => {
+        if (img && img.complete && img.naturalHeight !== 0) {
+            if (img.classList) {
+                img.classList.add('loaded');
+            }
+        }
+    });
+    
+    // Intersection Observer for scroll animations
+    if (typeof IntersectionObserver !== 'undefined') {
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+        
+        const observer = new IntersectionObserver(function(entries) {
+            entries.forEach(entry => {
+                if (entry && entry.target && entry.isIntersecting) {
+                    if (entry.target.classList) {
+                        entry.target.classList.add('visible');
+                    }
+                }
+            });
+        }, observerOptions);
+        
+        // Observe elements with fade-in-on-scroll class
+        const scrollElements = document.querySelectorAll('.fade-in-on-scroll');
+        scrollElements.forEach(el => {
+            if (el) {
+                observer.observe(el);
+            }
+        });
+    }
+});
+
+// Make sendProductInquiry globally available
+window.sendProductInquiry = function(productId, productName) {
+    try {
+        const inquiryModal = document.getElementById('inquiryModal');
+        if (!inquiryModal) {
+            console.warn('Inquiry modal not found');
+            return;
+        }
+        
+        const productIdInput = document.getElementById('inquiryProductId');
+        const productNameInput = document.getElementById('inquiryProductName');
+        const displayProductName = document.getElementById('displayProductName');
+        const displayProductId = document.getElementById('displayProductId');
+        
+        if (productIdInput) productIdInput.value = productId || '';
+        if (productNameInput) productNameInput.value = productName || '';
+        if (displayProductName) {
+            if (displayProductName.tagName === 'INPUT' || displayProductName.tagName === 'TEXTAREA') {
+                displayProductName.value = productName || '';
+            } else {
+                displayProductName.textContent = productName || '';
+            }
+        }
+        if (displayProductId) {
+            if (displayProductId.tagName === 'INPUT' || displayProductId.tagName === 'TEXTAREA') {
+                displayProductId.value = productId || '';
+            } else {
+                displayProductId.textContent = productId || '';
+            }
+        }
+        
+        if (typeof bootstrap !== 'undefined' && bootstrap.Modal) {
+            const modal = new bootstrap.Modal(inquiryModal);
+            modal.show();
+        }
+    } catch (error) {
+        console.error('Error opening inquiry modal:', error);
+    }
+};
+
+// Handle inquiry buttons using event delegation (CSP compliant)
+document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('click', function(e) {
+        const btn = e.target.closest('[data-action="inquiry"]');
+        if (btn) {
+            const productId = btn.getAttribute('data-product-id');
+            const productName = btn.getAttribute('data-product-name');
+            if (productId) {
+                sendProductInquiry(productId, productName);
+            }
+        }
+    });
+});
+
+document.getElementById('inquiryForm')?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const formData = new FormData(e.target);
+    const data = Object.fromEntries(formData);
+    
+    if (data.product_ids) data.product_ids = [data.product_ids];
+    if (data.product_name && !data.message) {
+        data.message = `Inquiry for: ${data.product_name}`;
+    } else if (data.product_name && data.message) {
+        data.message = `Inquiry for: ${data.product_name}\n\n${data.message}`;
+    }
+    
+    try {
+        const response = await fetch('/inquiry', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+        });
+        
+        const result = await response.json();
+        if (result.success) {
+            alert('✅ Your inquiry has been received! We will contact you shortly.');
+            const modal = document.getElementById('inquiryModal');
+            if (modal && typeof bootstrap !== 'undefined' && bootstrap.Modal) {
+                const modalInstance = bootstrap.Modal.getInstance(modal);
+                if (modalInstance) {
+                    modalInstance.hide();
+                }
+            }
+            e.target.reset();
+        } else {
+            alert('❌ ' + result.message);
+        }
+    } catch (error) {
+        alert('❌ Failed to send inquiry. Please try again or call us directly at +91 9171310766');
+    }
+});
+document.addEventListener("DOMContentLoaded", function () {
+    const myCarousel = document.querySelector('#heroCarousel');
+    if (myCarousel) {
+        new bootstrap.Carousel(myCarousel, {
+            interval: 3000,
+            ride: 'carousel',
+            pause: 'hover',
+            wrap: true
+        });
+    }
+});
+
+</script>
+
+<%- include('partials/footer') %>
+

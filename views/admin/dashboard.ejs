@@ -1,0 +1,149 @@
+<%- include('partials/header', { title: 'Dashboard' }) %>
+
+<div class="container mt-4">
+    <h1 class="mb-4"><i class="bi bi-speedometer2"></i> Dashboard</h1>
+
+    <!-- Stats Cards -->
+    <div class="row mb-4">
+        <div class="col-md-3 mb-3">
+            <div class="card text-white bg-primary">
+                <div class="card-body">
+                    <h5 class="card-title"><i class="bi bi-box"></i> Products</h5>
+                    <h2><%= totalProducts || 0 %></h2>
+                    <a href="/admin/products" class="text-white text-decoration-none">View All →</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card text-white bg-success">
+                <div class="card-body">
+                    <h5 class="card-title"><i class="bi bi-tags"></i> Categories</h5>
+                    <h2><%= totalCategories || 0 %></h2>
+                    <a href="/admin/categories" class="text-white text-decoration-none">View All →</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card text-white bg-warning">
+                <div class="card-body">
+                    <h5 class="card-title"><i class="bi bi-envelope"></i> Inquiries</h5>
+                    <h2><%= totalInquiries || 0 %></h2>
+                    <small>New: <%= newInquiries || 0 %></small><br>
+                    <a href="/admin/inquiries" class="text-white text-decoration-none">View All →</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card text-white bg-info">
+                <div class="card-body">
+                    <h5 class="card-title"><i class="bi bi-file-text"></i> Articles</h5>
+                    <h2><%= totalArticles || 0 %></h2>
+                    <a href="/admin/articles" class="text-white text-decoration-none">View All →</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5><i class="bi bi-lightning"></i> Quick Actions</h5>
+                </div>
+                <div class="card-body">
+                    <a href="/admin/products/create" class="btn btn-primary me-2">
+                        <i class="bi bi-plus-circle"></i> Add Product
+                    </a>
+                    <a href="/admin/categories/create" class="btn btn-success me-2">
+                        <i class="bi bi-plus-circle"></i> Add Category
+                    </a>
+                    <a href="/admin/articles/create" class="btn btn-info me-2">
+                        <i class="bi bi-plus-circle"></i> Add Article
+                    </a>
+                    <a href="/admin/banners/create" class="btn btn-warning">
+                        <i class="bi bi-plus-circle"></i> Add Banner
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Inquiries -->
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h5><i class="bi bi-clock-history"></i> Recent Inquiries</h5>
+                </div>
+                <div class="card-body">
+                    <% if (recentInquiries && recentInquiries.length > 0) { %>
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Email</th>
+                                        <th>Status</th>
+                                        <th>Date</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <% recentInquiries.forEach(inquiry => { %>
+                                        <tr>
+                                            <td><%= inquiry.name %></td>
+                                            <td><%= inquiry.email %></td>
+                                            <td>
+                                                <span class="badge bg-<%= inquiry.status === 'new' ? 'danger' : inquiry.status === 'contacted' ? 'warning' : 'success' %>">
+                                                    <%= inquiry.status %>
+                                                </span>
+                                            </td>
+                                            <td><%= new Date(inquiry.created_at).toLocaleDateString() %></td>
+                                            <td>
+                                                <a href="/admin/inquiries/view/<%= inquiry._id %>" class="btn btn-sm btn-primary">
+                                                    View
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    <% }); %>
+                                </tbody>
+                            </table>
+                        </div>
+                    <% } else { %>
+                        <p class="text-muted">No inquiries yet.</p>
+                    <% } %>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5><i class="bi bi-bar-chart"></i> Category Performance</h5>
+                </div>
+                <div class="card-body">
+                    <% if (categoryStats && categoryStats.length > 0) { %>
+                        <% categoryStats.forEach(stat => { %>
+                            <div class="mb-3">
+                                <div class="d-flex justify-content-between mb-1">
+                                    <span><%= stat.name %></span>
+                                    <span><strong><%= stat.count %></strong></span>
+                                </div>
+                                <div class="progress" style="height: 8px;">
+                                    <div class="progress-bar" role="progressbar" 
+                                         style="width: <%= (stat.count / activeProducts) * 100 %>%">
+                                    </div>
+                                </div>
+                            </div>
+                        <% }); %>
+                    <% } else { %>
+                        <p class="text-muted">No data available.</p>
+                    <% } %>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<%- include('partials/footer') %>
+

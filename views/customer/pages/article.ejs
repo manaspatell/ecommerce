@@ -1,0 +1,103 @@
+<%- include('../partials/header', { title: article.title }) %>
+
+<div class="container my-5">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/">Home</a></li>
+            <li class="breadcrumb-item"><a href="/blog">Blog</a></li>
+            <li class="breadcrumb-item active"><%= article.title %></li>
+        </ol>
+    </nav>
+
+    <div class="row">
+        <div class="col-md-8">
+            <article>
+                <% if (article.image) { %>
+                    <div class="article-featured-image mb-4">
+                        <img src="<%= article.image %>" class="img-fluid rounded" alt="<%= article.title %>" loading="eager" onerror="this.style.display='none';">
+                    </div>
+                <% } else { %>
+                    <div class="article-featured-image mb-4 no-image">
+                        <div class="article-placeholder-large">
+                            <i class="bi bi-journal-text"></i>
+                        </div>
+                    </div>
+                <% } %>
+                <h1><%= article.title %></h1>
+                <div class="text-muted mb-4">
+                    <small>
+                        <i class="bi bi-calendar"></i> <%= new Date(article.created_at).toLocaleDateString() %> | 
+                        <i class="bi bi-eye"></i> <%= article.views || 0 %> views |
+                        <i class="bi bi-tag"></i> <%= article.category %>
+                    </small>
+                </div>
+                <div class="article-content">
+                    <%= article.content.replace(/\n/g, '<br>') %>
+                </div>
+                <% if (article.tags && article.tags.length > 0) { %>
+                    <div class="mt-4">
+                        <strong>Tags:</strong>
+                        <% article.tags.forEach(tag => { %>
+                            <span class="badge bg-secondary me-1"><%= tag %></span>
+                        <% }); %>
+                    </div>
+                <% } %>
+            </article>
+
+            <!-- Related Articles -->
+            <% if (relatedArticles && relatedArticles.length > 0) { %>
+                <hr class="my-5">
+                <h3>Related Articles</h3>
+                <div class="row g-4">
+                    <% relatedArticles.forEach(article => { %>
+                        <div class="col-md-4">
+                                <div class="card h-100 shadow-sm article-card">
+                                <% if (article.image) { %>
+                                    <div class="article-image-container">
+                                        <img src="<%= article.image %>" class="card-img-top article-image" style="height: 150px; object-fit: cover;" alt="<%= article.title %>" loading="lazy" onerror="this.style.display='none'; this.parentElement.classList.add('no-image');">
+                                    </div>
+                                <% } else { %>
+                                    <div class="article-image-container no-image">
+                                        <div class="article-placeholder">
+                                            <i class="bi bi-journal-text"></i>
+                                        </div>
+                                    </div>
+                                <% } %>
+                                <div class="card-body">
+                                    <h6 class="card-title">
+                                        <a href="/article/<%= article.slug %>" class="text-decoration-none text-dark">
+                                            <%= article.title %>
+                                        </a>
+                                    </h6>
+                                    <a href="/article/<%= article.slug %>" class="btn btn-sm btn-outline-primary">Read More</a>
+                                </div>
+                            </div>
+                        </div>
+                    <% }); %>
+                </div>
+            <% } %>
+        </div>
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Share This Article</h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex gap-2">
+                        <a href="https://www.facebook.com/sharer/sharer.php?u=<%= encodeURIComponent('https://yoursite.com/article/' + article.slug) %>" 
+                           target="_blank" class="btn btn-primary btn-sm">
+                            <i class="bi bi-facebook"></i> Facebook
+                        </a>
+                        <a href="https://twitter.com/intent/tweet?url=<%= encodeURIComponent('https://yoursite.com/article/' + article.slug) %>" 
+                           target="_blank" class="btn btn-info btn-sm">
+                            <i class="bi bi-twitter"></i> Twitter
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<%- include('../partials/footer') %>
+

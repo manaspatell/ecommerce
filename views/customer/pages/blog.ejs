@@ -1,0 +1,89 @@
+<%- include('../partials/header', { title: 'Blog' }) %>
+
+<div class="container my-5">
+    <div class="row">
+        <div class="col-md-3">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5>Categories</h5>
+                </div>
+                <div class="card-body">
+                    <div class="list-group">
+                        <a href="/blog" class="list-group-item list-group-item-action <%= currentCategory === 'all' ? 'active' : '' %>">
+                            All Articles
+                        </a>
+                        <% categories.forEach(cat => { %>
+                            <a href="/blog?category=<%= cat %>" 
+                               class="list-group-item list-group-item-action <%= currentCategory === cat ? 'active' : '' %>">
+                                <%= cat.charAt(0).toUpperCase() + cat.slice(1) %>
+                            </a>
+                        <% }); %>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-9">
+            <h1 class="mb-4">Blog & Articles</h1>
+            <div class="row g-4">
+                <% if (articles && articles.length > 0) { %>
+                    <% articles.forEach(article => { %>
+                        <div class="col-md-4">
+                            <div class="card h-100 shadow-sm article-card">
+                                <% if (article.image) { %>
+                                    <div class="article-image-container">
+                                        <img src="<%= article.image %>" class="card-img-top article-image" alt="<%= article.title %>" loading="lazy" onerror="this.style.display='none'; this.parentElement.classList.add('no-image');">
+                                    </div>
+                                <% } else { %>
+                                    <div class="article-image-container no-image">
+                                        <div class="article-placeholder">
+                                            <i class="bi bi-journal-text"></i>
+                                        </div>
+                                    </div>
+                                <% } %>
+                                <div class="card-body">
+                                    <h5 class="card-title">
+                                        <a href="/article/<%= article.slug %>" class="text-decoration-none text-dark">
+                                            <%= article.title %>
+                                        </a>
+                                    </h5>
+                                    <p class="card-text text-muted">
+                                        <%= article.excerpt || article.content.substring(0, 150) + '...' %>
+                                    </p>
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <small class="text-muted">
+                                            <i class="bi bi-eye"></i> <%= article.views || 0 %> views
+                                        </small>
+                                        <a href="/article/<%= article.slug %>" class="btn btn-sm btn-outline-primary">
+                                            Read More
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    <% }); %>
+                <% } else { %>
+                    <div class="col-12 text-center">
+                        <p class="text-muted">No articles found.</p>
+                    </div>
+                <% } %>
+            </div>
+
+            <% if (totalPages > 1) { %>
+                <nav class="mt-4">
+                    <ul class="pagination justify-content-center">
+                        <% for (let i = 1; i <= totalPages; i++) { %>
+                            <li class="page-item <%= i === currentPage ? 'active' : '' %>">
+                                <a class="page-link" href="?page=<%= i %>&category=<%= currentCategory %>">
+                                    <%= i %>
+                                </a>
+                            </li>
+                        <% } %>
+                    </ul>
+                </nav>
+            <% } %>
+        </div>
+    </div>
+</div>
+
+<%- include('../partials/footer') %>
+

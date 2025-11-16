@@ -1,0 +1,308 @@
+<%- include('../partials/header', { title: product.name }) %>
+
+<div class="container my-5">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/">Home</a></li>
+            <% if (product.category_id && product.category_id.slug) { %>
+                <li class="breadcrumb-item"><a href="/category/<%= product.category_id.slug %>"><%= product.category_id.name %></a></li>
+            <% } %>
+            <li class="breadcrumb-item active"><%= product.name %></li>
+        </ol>
+    </nav>
+
+    <div class="row">
+        <div class="col-md-6">
+            <% if (product.images && product.images.length > 0) { %>
+                <div id="productCarousel" class="carousel slide mb-3" data-bs-ride="carousel">
+                    <div class="carousel-inner">
+                        <% product.images.forEach((img, index) => { %>
+                            <div class="carousel-item <%= index === 0 ? 'active' : '' %>">
+                                <img src="<%= img %>" class="d-block w-100" style="height: 500px; object-fit: contain; background-color: #f0f0f0;" alt="<%= product.name %>"
+                                     onerror="this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'500\' height=\'500\'%3E%3Crect width=\'500\' height=\'500\' fill=\'%23ddd\'/%3E%3Ctext x=\'50%25\' y=\'50%25\' text-anchor=\'middle\' dy=\'.3em\' fill=\'%23999\' font-size=\'24\'%3ENo Image%3C/text%3E%3C/svg%3E'; this.style.backgroundColor='#f0f0f0';">
+                            </div>
+                        <% }); %>
+                    </div>
+                    <% if (product.images.length > 1) { %>
+                        <button class="carousel-control-prev" type="button" data-bs-target="#productCarousel" data-bs-slide="prev">
+                            <span class="carousel-control-prev-icon"></span>
+                        </button>
+                        <button class="carousel-control-next" type="button" data-bs-target="#productCarousel" data-bs-slide="next">
+                            <span class="carousel-control-next-icon"></span>
+                        </button>
+                    <% } %>
+                </div>
+                <% if (product.images.length > 1) { %>
+                    <div class="row g-2">
+                        <% product.images.forEach((img, index) => { %>
+                            <div class="col-3">
+                                <img src="<%= img %>" class="img-thumbnail product-thumbnail" style="cursor: pointer; height: 80px; object-fit: cover; background-color: #f0f0f0;" 
+                                     data-image-index="<%= index %>" alt="Thumbnail <%= index + 1 %>"
+                                     onerror="this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'80\' height=\'80\'%3E%3Crect width=\'80\' height=\'80\' fill=\'%23ddd\'/%3E%3C/svg%3E'; this.style.backgroundColor='#f0f0f0';">
+                            </div>
+                        <% }); %>
+                    </div>
+                <% } %>
+            <% } else { %>
+                <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='500' height='500'%3E%3Crect width='500' height='500' fill='%23ddd'/%3E%3Ctext x='50%25' y='50%25' text-anchor='middle' dy='.3em' fill='%23999' font-size='24'%3ENo Image Available%3C/text%3E%3C/svg%3E" 
+                     class="img-fluid" style="background-color: #f0f0f0;" alt="<%= product.name %>">
+            <% } %>
+        </div>
+        <div class="col-md-6">
+            <h1><%= product.name %></h1>
+            <p class="text-muted">SKU: <%= product.sku || 'N/A' %></p>
+            <div class="mb-4">
+                <% 
+                let finalPrice = product.price;
+                if (product.discount && product.discount.enabled && product.discount.percentage > 0) {
+                    finalPrice = product.price * (1 - product.discount.percentage / 100);
+                %>
+                    <div class="mb-2">
+                        <span class="price-original" style="font-size: 1.5rem;">₹<%= product.price.toLocaleString() %></span>
+                        <span class="price-discounted" style="font-size: 2rem;">₹<%= Math.round(finalPrice).toLocaleString() %></span>
+                    </div>
+                    <span class="badge bg-danger" style="background: var(--sale-badge) !important;"><%= product.discount.percentage %>% OFF</span>
+                <% } else { %>
+                    <h2 class="price-discounted mb-4" style="font-size: 2rem;">₹<%= product.price.toLocaleString() %></h2>
+                <% } %>
+            </div>
+            
+            <% if (product.description) { %>
+                <div class="mb-4">
+                    <h5>Description</h5>
+                    <p><%= product.description %></p>
+                </div>
+            <% } %>
+
+            <% 
+            // Convert Mongoose Map to plain object for rendering
+            let specs = {};
+            if (product.specifications) {
+                if (product.specifications instanceof Map) {
+                    product.specifications.forEach((value, key) => {
+                        specs[key] = value;
+                    });
+                } else if (typeof product.specifications === 'object') {
+                    specs = product.specifications;
+                }
+            }
+            %>
+            <% if (specs && Object.keys(specs).length > 0) { %>
+                <div class="mb-4">
+                    <h5>Specifications</h5>
+                    <table class="table table-bordered">
+                        <tbody>
+                            <% Object.entries(specs).forEach(([key, value]) => { %>
+                                <tr>
+                                    <th><%= key %></th>
+                                    <td><%= value %></td>
+                                </tr>
+                            <% }); %>
+                        </tbody>
+                    </table>
+                </div>
+            <% } %>
+
+            <div class="mb-4">
+                <button class="btn btn-inquiry btn-lg w-100 mb-2" data-product-id="<%= product._id %>" data-product-name="<%= product.name %>" data-action="inquiry">
+                    <i class="bi bi-envelope"></i> Send Inquiry
+                </button>
+                <a href="tel:+919171310766" class="btn btn-outline-primary btn-lg w-100">
+                    <i class="bi bi-telephone-fill"></i> Call Now: +91 9171310766
+                </a>
+            </div>
+
+            <% if (product.tags && product.tags.length > 0) { %>
+                <div class="mb-4">
+                    <strong>Tags:</strong>
+                    <% product.tags.forEach(tag => { %>
+                        <span class="badge bg-secondary me-1"><%= tag %></span>
+                    <% }); %>
+                </div>
+            <% } %>
+        </div>
+    </div>
+
+    <!-- Related Products -->
+    <% if (relatedProducts && relatedProducts.length > 0) { %>
+        <hr class="my-5">
+        <h3 class="mb-4">Related Products</h3>
+        <div class="row g-4">
+            <% relatedProducts.forEach(product => { %>
+                <div class="col-md-3">
+                    <div class="card h-100 shadow-sm">
+                        <a href="/product/<%= product.slug %>">
+                            <img src="<%= product.images && product.images.length > 0 ? product.images[0] : 'data:image/svg+xml,%3Csvg xmlns=\"http://www.w3.org/2000/svg\" width=\"200\" height=\"200\"%3E%3Crect width=\"200\" height=\"200\" fill=\"%23ddd\"/%3E%3Ctext x=\"50%25\" y=\"50%25\" text-anchor=\"middle\" dy=\".3em\" fill=\"%23999\"%3ENo Image%3C/text%3E%3C/svg%3E' %>" 
+                                 class="card-img-top" style="height: 200px; object-fit: cover; background-color: #f0f0f0;" alt="<%= product.name %>"
+                                 onerror="this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'200\' height=\'200\'%3E%3Crect width=\'200\' height=\'200\' fill=\'%23ddd\'/%3E%3Ctext x=\'50%25\' y=\'50%25\' text-anchor=\'middle\' dy=\'.3em\' fill=\'%23999\'%3ENo Image%3C/text%3E%3C/svg%3E'; this.style.backgroundColor='#f0f0f0';">
+                        </a>
+                        <div class="card-body">
+                            <h6 class="card-title">
+                                <a href="/product/<%= product.slug %>" class="text-decoration-none text-dark">
+                                    <%= product.name %>
+                                </a>
+                            </h6>
+                            <div class="mb-2">
+                                <% 
+                                let relatedFinalPrice = product.price;
+                                if (product.discount && product.discount.enabled && product.discount.percentage > 0) {
+                                    relatedFinalPrice = product.price * (1 - product.discount.percentage / 100);
+                                %>
+                                    <span class="price-original">₹<%= product.price.toLocaleString() %></span>
+                                    <span class="price-discounted">₹<%= Math.round(relatedFinalPrice).toLocaleString() %></span>
+                                <% } else { %>
+                                    <span class="price-discounted">₹<%= product.price.toLocaleString() %></span>
+                                <% } %>
+                            </div>
+                            <button class="btn btn-inquiry btn-sm w-100" data-product-id="<%= product._id %>" data-product-name="<%= product.name %>" data-action="inquiry">
+                                <i class="bi bi-envelope"></i> Send Inquiry
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            <% }); %>
+        </div>
+    <% } %>
+</div>
+
+<!-- Inquiry Modal -->
+<div class="modal fade" id="inquiryModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Send Inquiry</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body inquiry-form">
+                <form id="inquiryForm">
+                    <input type="hidden" id="inquiryProductId" name="product_ids">
+                    <input type="hidden" id="inquiryProductName" name="product_name">
+                    <div class="mb-3">
+                        <label class="form-label">Full Name *</label>
+                        <input type="text" class="form-control" name="name" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Phone Number *</label>
+                        <input type="tel" class="form-control" name="phone" required placeholder="Enter your number here">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Gmail Email *</label>
+                        <input type="email" class="form-control" name="email" required placeholder="yourname@gmail.com">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Product Name</label>
+                        <input type="text" class="form-control" id="displayProductName" readonly>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Product ID</label>
+                        <input type="text" class="form-control" id="displayProductId" readonly>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Message (Optional)</label>
+                        <textarea class="form-control" name="message" rows="4" placeholder="Any additional information..."></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-inquiry w-100 mb-2">Send Inquiry</button>
+                    <a href="tel:+919171310766" class="btn btn-outline-primary w-100">
+                        <i class="bi bi-telephone-fill"></i> Call Directly: +91 9171310766
+                    </a>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Handle product image thumbnails
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.product-thumbnail').forEach(thumb => {
+        thumb.addEventListener('click', function() {
+            const index = parseInt(this.getAttribute('data-image-index'));
+            const carousel = document.querySelector('#productCarousel');
+            if (carousel) {
+                const bsCarousel = bootstrap.Carousel.getInstance(carousel) || new bootstrap.Carousel(carousel);
+                bsCarousel.to(index);
+            }
+        });
+    });
+    
+    // Handle inquiry buttons using event delegation (CSP compliant)
+    document.addEventListener('click', function(e) {
+        const btn = e.target.closest('[data-action="inquiry"]');
+        if (btn) {
+            const productId = btn.getAttribute('data-product-id');
+            const productName = btn.getAttribute('data-product-name');
+            if (productId) {
+                sendProductInquiry(productId, productName);
+            }
+        }
+    });
+});
+
+// Make sendProductInquiry globally available
+window.sendProductInquiry = function(productId, productName) {
+    const inquiryModal = document.getElementById('inquiryModal');
+    if (inquiryModal) {
+        const productIdInput = document.getElementById('inquiryProductId');
+        const productNameInput = document.getElementById('inquiryProductName');
+        const displayProductName = document.getElementById('displayProductName');
+        const displayProductId = document.getElementById('displayProductId');
+        
+        if (productIdInput) {
+            productIdInput.value = productId;
+        }
+        if (productNameInput) {
+            productNameInput.value = productName || '';
+        }
+        if (displayProductName) {
+            displayProductName.value = productName || 'Product';
+        }
+        if (displayProductId) {
+            displayProductId.value = productId;
+        }
+        
+        const modal = new bootstrap.Modal(inquiryModal);
+        modal.show();
+    } else {
+        window.location.href = '/contact?product=' + productId;
+    }
+}
+
+document.getElementById('inquiryForm')?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const formData = new FormData(e.target);
+    const data = Object.fromEntries(formData);
+    
+    if (data.product_ids) {
+        data.product_ids = [data.product_ids];
+    }
+    
+    // Add product name to message if provided
+    if (data.product_name && !data.message) {
+        data.message = `Inquiry for: ${data.product_name}`;
+    } else if (data.product_name && data.message) {
+        data.message = `Inquiry for: ${data.product_name}\n\n${data.message}`;
+    }
+    
+    try {
+        const response = await fetch('/inquiry', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+        });
+        
+        const result = await response.json();
+        if (result.success) {
+            alert('✅ Your inquiry has been received! We will contact you shortly.');
+            bootstrap.Modal.getInstance(document.getElementById('inquiryModal')).hide();
+            e.target.reset();
+        } else {
+            alert('❌ ' + result.message);
+        }
+    } catch (error) {
+        alert('❌ Failed to send inquiry. Please try again or call us directly at +91 9171310766');
+    }
+});
+</script>
+
+<%- include('../partials/footer') %>
+

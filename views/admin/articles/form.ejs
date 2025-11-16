@@ -1,0 +1,85 @@
+<%- include('../partials/header', { title: article ? 'Edit Article' : 'Add Article' }) %>
+
+<div class="container mt-4">
+    <h1 class="mb-4">
+        <i class="bi bi-<%= article ? 'pencil' : 'plus-circle' %>"></i> 
+        <%= article ? 'Edit Article' : 'Add New Article' %>
+    </h1>
+
+    <% if (typeof error !== 'undefined' && error) { %>
+        <div class="alert alert-danger"><%= error %></div>
+    <% } %>
+
+    <form method="POST" action="<%= article ? '/admin/articles/edit/' + article._id : '/admin/articles/create' %>" 
+          enctype="multipart/form-data">
+        <div class="row">
+            <div class="col-md-8">
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label class="form-label">Title *</label>
+                            <input type="text" class="form-control" name="title" 
+                                   value="<%= article ? article.title : '' %>" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Excerpt</label>
+                            <textarea class="form-control" name="excerpt" rows="3"><%= article ? article.excerpt : '' %></textarea>
+                            <small class="text-muted">Brief summary (auto-generated if empty)</small>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Content *</label>
+                            <textarea class="form-control" name="content" rows="15" required><%= article ? article.content : '' %></textarea>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Category</label>
+                                <input type="text" class="form-control" name="category" 
+                                       value="<%= article ? article.category : 'general' %>">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Status</label>
+                                <select class="form-select" name="status">
+                                    <option value="draft" <%= article && article.status === 'draft' ? 'selected' : '' %>>Draft</option>
+                                    <option value="published" <%= article && article.status === 'published' ? 'selected' : '' %>>Published</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Tags (comma separated)</label>
+                            <input type="text" class="form-control" name="tags" 
+                                   value="<%= article && article.tags ? article.tags.join(', ') : '' %>"
+                                   placeholder="electronics, guide, tips">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-header">Featured Image</div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label class="form-label">Upload Image</label>
+                            <input type="file" class="form-control" name="image" accept="image/*">
+                        </div>
+                        <% if (article && article.image) { %>
+                            <div class="mb-3">
+                                <label class="form-label">Current Image</label>
+                                <img src="<%= article.image %>" class="img-thumbnail" style="width: 100%;">
+                            </div>
+                        <% } %>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="mb-4">
+            <button type="submit" class="btn btn-primary">
+                <i class="bi bi-save"></i> <%= article ? 'Update' : 'Create' %> Article
+            </button>
+            <a href="/admin/articles" class="btn btn-secondary">Cancel</a>
+        </div>
+    </form>
+</div>
+
+<%- include('../partials/footer') %>
+

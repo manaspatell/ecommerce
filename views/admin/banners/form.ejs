@@ -1,0 +1,88 @@
+<%- include('../partials/header', { title: banner ? 'Edit Banner' : 'Add Banner' }) %>
+
+<div class="container mt-4">
+    <h1 class="mb-4">
+        <i class="bi bi-<%= banner ? 'pencil' : 'plus-circle' %>"></i> 
+        <%= banner ? 'Edit Banner' : 'Add New Banner' %>
+    </h1>
+
+    <% if (typeof error !== 'undefined' && error) { %>
+        <div class="alert alert-danger"><%= error %></div>
+    <% } %>
+
+    <form method="POST" action="<%= banner ? '/admin/banners/edit/' + banner._id : '/admin/banners/create' %>" 
+          enctype="multipart/form-data">
+        <div class="row">
+            <div class="col-md-8">
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label class="form-label">Title *</label>
+                            <input type="text" class="form-control" name="title" 
+                                   value="<%= banner ? banner.title : '' %>" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Subtitle</label>
+                            <input type="text" class="form-control" name="subtitle" 
+                                   value="<%= banner ? banner.subtitle : '' %>">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Link URL</label>
+                            <input type="url" class="form-control" name="link" 
+                                   value="<%= banner ? banner.link : '' %>"
+                                   placeholder="https://example.com">
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Status</label>
+                                <select class="form-select" name="status">
+                                    <option value="active" <%= banner && banner.status === 'active' ? 'selected' : '' %>>Active</option>
+                                    <option value="inactive" <%= banner && banner.status === 'inactive' ? 'selected' : '' %>>Inactive</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Order</label>
+                                <input type="number" class="form-control" name="order" 
+                                       value="<%= banner ? banner.order : 0 %>" min="0">
+                                <small class="text-muted">Lower numbers appear first</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-header">Banner Image *</div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label class="form-label">Upload Image</label>
+                            <input type="file" class="form-control" name="image" accept="image/*" 
+                                   <%= banner ? '' : 'required' %>>
+                        </div>
+                        <% if (banner && banner.image) { %>
+                            <div class="mb-3">
+                                <label class="form-label">Current Image</label>
+                                <img src="<%= banner.image %>" 
+                                     class="img-thumbnail" 
+                                     style="width: 100%; height: 200px; object-fit: cover; background-color: #f0f0f0;"
+                                     alt="Banner Image"
+                                     onerror="this.onerror=null; this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'200\' height=\'200\'%3E%3Crect width=\'200\' height=\'200\' fill=\'%23ddd\'/%3E%3Ctext x=\'50%25\' y=\'50%25\' text-anchor=\'middle\' dy=\'.3em\' fill=\'%23999\'%3EImage Not Found%3C/text%3E%3C/svg%3E'; this.style.backgroundColor='#f0f0f0';">
+                                <small class="d-block text-muted mt-1" style="word-break: break-all;"><%= banner.image %></small>
+                            </div>
+                        <% } %>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="mb-4">
+            <button type="submit" class="btn btn-primary">
+                <i class="bi bi-save"></i> <%= banner ? 'Update' : 'Create' %> Banner
+            </button>
+            <a href="/admin/banners" class="btn btn-secondary">Cancel</a>
+        </div>
+    </form>
+</div>
+
+<%- include('../partials/footer') %>
+

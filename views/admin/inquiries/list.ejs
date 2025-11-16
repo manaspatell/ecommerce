@@ -1,0 +1,151 @@
+<%- include('../partials/header', { title: 'Inquiries' }) %>
+
+<div class="container mt-4">
+    <h1 class="mb-4"><i class="bi bi-envelope"></i> Inquiries</h1>
+
+    <!-- Stats -->
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="card text-white bg-danger">
+                <div class="card-body">
+                    <h5>New Inquiries</h5>
+                    <h2><%= stats.new || 0 %></h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card text-white bg-warning">
+                <div class="card-body">
+                    <h5>Contacted</h5>
+                    <h2><%= stats.contacted || 0 %></h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card text-white bg-success">
+                <div class="card-body">
+                    <h5>Closed</h5>
+                    <h2><%= stats.closed || 0 %></h2>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filters -->
+    <div class="card mb-3">
+        <div class="card-body">
+            <div class="btn-group" role="group">
+                <a href="?status=all" class="btn btn-<%= currentStatus === 'all' ? 'primary' : 'outline-primary' %>">All</a>
+                <a href="?status=new" class="btn btn-<%= currentStatus === 'new' ? 'primary' : 'outline-primary' %>">New</a>
+                <a href="?status=contacted" class="btn btn-<%= currentStatus === 'contacted' ? 'primary' : 'outline-primary' %>">Contacted</a>
+                <a href="?status=closed" class="btn btn-<%= currentStatus === 'closed' ? 'primary' : 'outline-primary' %>">Closed</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Phone</th>
+                            <th>Products</th>
+                            <th>Status</th>
+                            <th>Date</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% if (inquiries && inquiries.length > 0) { %>
+                            <% inquiries.forEach(inquiry => { %>
+                                <tr>
+                                    <td><%= inquiry.name %></td>
+                                    <td><%= inquiry.email %></td>
+                                    <td><%= inquiry.phone %></td>
+                                    <td>
+                                        <% if (inquiry.product_ids && inquiry.product_ids.length > 0) { %>
+                                            <%= inquiry.product_ids.length %> product(s)
+                                        <% } else { %>
+                                            General Inquiry
+                                        <% } %>
+                                    </td>
+                                    <td>
+                                        <select class="form-select form-select-sm" 
+                                                onchange="updateStatus('<%= inquiry._id %>', this.value)">
+                                            <option value="new" <%= inquiry.status === 'new' ? 'selected' : '' %>>New</option>
+                                            <option value="contacted" <%= inquiry.status === 'contacted' ? 'selected' : '' %>>Contacted</option>
+                                            <option value="closed" <%= inquiry.status === 'closed' ? 'selected' : '' %>>Closed</option>
+                                        </select>
+                                    </td>
+                                    <td><%= new Date(inquiry.created_at).toLocaleDateString() %></td>
+                                    <td>
+                                        <a href="/admin/inquiries/view/<%= inquiry._id %>" class="btn btn-sm btn-primary">
+                                            <i class="bi bi-eye"></i> View
+                                        </a>
+                                        <button type="button" class="btn btn-sm btn-danger" 
+                                                onclick="deleteInquiry('<%= inquiry._id %>')">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                            <% }); %>
+                        <% } else { %>
+                            <tr>
+                                <td colspan="7" class="text-center">No inquiries found.</td>
+                            </tr>
+                        <% } %>
+                    </tbody>
+                </table>
+            </div>
+
+            <% if (totalPages > 1) { %>
+                <nav>
+                    <ul class="pagination justify-content-center">
+                        <% for (let i = 1; i <= totalPages; i++) { %>
+                            <li class="page-item <%= i === currentPage ? 'active' : '' %>">
+                                <a class="page-link" href="?page=<%= i %>&status=<%= currentStatus %>"><%= i %></a>
+                            </li>
+                        <% } %>
+                    </ul>
+                </nav>
+            <% } %>
+        </div>
+    </div>
+</div>
+
+<script>
+function updateStatus(id, status) {
+    fetch('/admin/inquiries/update-status/' + id, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status })
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.success) {
+            location.reload();
+        }
+    });
+}
+
+function deleteInquiry(id) {
+    if (!confirm('Are you sure you want to delete this inquiry?')) return;
+    
+    fetch('/admin/inquiries/delete/' + id, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' }
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.success) {
+            location.reload();
+        }
+    });
+}
+</script>
+
+<%- include('../partials/footer') %>
+
